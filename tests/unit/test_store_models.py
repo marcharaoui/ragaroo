@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-import ragaroo as rr
+import ragaroo as roo
 
 
 class TestStoreModels(unittest.TestCase):
@@ -17,21 +17,21 @@ class TestStoreModels(unittest.TestCase):
             os.environ["SENTENCE_TRANSFORMERS_HOME"] = self.original
 
     def test_store_models_sets_environment_variable(self):
-        value = rr.store_models("./models")
+        value = roo.store_models("./models")
 
         self.assertEqual(value, str(Path("./models")))
         self.assertEqual(os.environ.get("SENTENCE_TRANSFORMERS_HOME"), str(Path("./models")))
 
     def test_store_models_none_restores_default_behavior(self):
-        rr.store_models("./models")
-        result = rr.store_models(None)
+        roo.store_models("./models")
+        result = roo.store_models(None)
 
         self.assertIsNone(result)
         self.assertNotIn("SENTENCE_TRANSFORMERS_HOME", os.environ)
 
     def test_store_models_loads_dotenv(self):
         with patch("dotenv.load_dotenv") as mocked_load_dotenv:
-            rr.store_models("./models")
+            roo.store_models("./models")
 
         mocked_load_dotenv.assert_called_once()
 

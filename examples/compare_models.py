@@ -3,7 +3,7 @@ from pprint import pprint
 
 from dotenv import load_dotenv
 
-import ragaroo as rr
+import ragaroo as roo
 
 
 DATASET_PATH = os.path.join("data", "nfcorpus")
@@ -12,27 +12,27 @@ MODEL_CACHE = "./models"
 
 def main() -> None:
     load_dotenv()
-    rr.store_models(MODEL_CACHE)
-    dataset = rr.Dataset.from_folder(DATASET_PATH)
+    roo.store_models(MODEL_CACHE)
+    dataset = roo.Dataset.from_folder(DATASET_PATH)
 
     print("Dataset summary")
     pprint(dataset.summary())
     print()
 
     pipelines = [
-        rr.Pipeline(
+        roo.Pipeline(
             name="dense_e5_small",
-            retriever=rr.DenseRetriever(
-                embedder=rr.SentenceTransformerEmbedder("intfloat/e5-small-v2"),
+            retriever=roo.DenseRetriever(
+                embedder=roo.SentenceTransformerEmbedder("intfloat/e5-small-v2"),
                 top_k=10,
                 index_technique="hnsw",
                 distance_metric="cosine",
             ),
         ),
-        rr.Pipeline(
+        roo.Pipeline(
             name="dense_bge_small",
-            retriever=rr.DenseRetriever(
-                embedder=rr.SentenceTransformerEmbedder("BAAI/bge-small-en-v1.5"),
+            retriever=roo.DenseRetriever(
+                embedder=roo.SentenceTransformerEmbedder("BAAI/bge-small-en-v1.5"),
                 top_k=10,
                 index_technique="hnsw",
                 distance_metric="cosine",
@@ -40,7 +40,7 @@ def main() -> None:
         ),
     ]
 
-    report = rr.Experiment(
+    report = roo.Experiment(
         dataset=dataset,
         pipelines=pipelines,
         query_limit=25,

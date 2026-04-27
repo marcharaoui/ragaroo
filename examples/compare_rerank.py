@@ -3,7 +3,7 @@ from pprint import pprint
 
 from dotenv import load_dotenv
 
-import ragaroo as rr
+import ragaroo as roo
 
 
 DATASET_PATH = os.path.join("data", "nfcorpus")
@@ -13,41 +13,41 @@ EMBEDDER_MODEL = "intfloat/e5-small-v2"
 
 def main() -> None:
     load_dotenv()
-    rr.store_models(MODEL_CACHE)
-    dataset = rr.Dataset.from_folder(DATASET_PATH)
+    roo.store_models(MODEL_CACHE)
+    dataset = roo.Dataset.from_folder(DATASET_PATH)
 
     print("Dataset summary")
     pprint(dataset.summary())
     print()
 
-    embedder = rr.SentenceTransformerEmbedder(EMBEDDER_MODEL)
+    embedder = roo.SentenceTransformerEmbedder(EMBEDDER_MODEL)
     pipelines = [
-        rr.Pipeline(
+        roo.Pipeline(
             name="dense_only",
-            retriever=rr.DenseRetriever(
+            retriever=roo.DenseRetriever(
                 embedder=embedder,
                 top_k=20,
                 index_technique="hnsw",
                 distance_metric="cosine",
             ),
         ),
-        rr.Pipeline(
+        roo.Pipeline(
             name="dense_rerank_top10",
-            retriever=rr.DenseRetriever(
+            retriever=roo.DenseRetriever(
                 embedder=embedder,
                 top_k=50,
                 index_technique="hnsw",
                 distance_metric="cosine",
             ),
-            reranker=rr.CrossEncoderReranker(
+            reranker=roo.CrossEncoderReranker(
                 model_name="cross-encoder/ms-marco-MiniLM-L-6-v2",
                 top_k=10,
             ),
         ),
-        rr.Pipeline(
+        roo.Pipeline(
             name="bm25_dense_rerank_top10",
-            retriever=rr.BM25Retriever(top_k=50),
-            reranker=rr.DenseRetriever(
+            retriever=roo.BM25Retriever(top_k=50),
+            reranker=roo.DenseRetriever(
                 embedder=embedder,
                 top_k=10,
                 index_technique="hnsw",
@@ -56,7 +56,7 @@ def main() -> None:
         ),
     ]
 
-    report = rr.Experiment(
+    report = roo.Experiment(
         dataset=dataset,
         pipelines=pipelines,
         query_limit=10,

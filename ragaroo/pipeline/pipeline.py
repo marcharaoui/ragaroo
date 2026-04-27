@@ -8,6 +8,7 @@ from typing import Any, Callable
 
 from ..base import BaseQueryTransform, BaseReranker, BaseRetriever
 from ..query_augmentation import BaseLLMProvider, QueryTransformSpec
+from ..query_augmentation.specs import _serialize_config_value
 from ..retrieval.types import RetrievedDocument
 
 
@@ -111,7 +112,7 @@ class Pipeline:
             "reranker": None if self.reranker is None else self.reranker.config_dict(),
             "query_augmentation": self._query_augmentation_config(),
             "llm_provider": None if self.llm_provider is None else self.llm_provider.config_dict(),
-            "metadata": self.metadata,
+            "metadata": _serialize_config_value(self.metadata),
         }
 
     def _apply_single_query_augmentation(

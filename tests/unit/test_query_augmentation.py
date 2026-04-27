@@ -5,13 +5,15 @@ from unittest.mock import patch
 
 from ragaroo.query_augmentation import (
     BaseLLMProvider,
+    HyDE,
     HyDEQueryTransform,
     IntentClarificationTransform,
     LLMSpellingCorrection,
     OpenRouterProvider,
     SequentialQueryTransform,
 )
-from ragaroo.base import BaseQueryTransform
+from ragaroo.base import BaseQueryTransform, BaseRetriever
+from ragaroo.pipeline import Pipeline
 
 
 class FakeProvider(BaseLLMProvider):
@@ -34,6 +36,17 @@ class FakeProvider(BaseLLMProvider):
 class PassThroughTransform(BaseQueryTransform):
     def transform_one(self, query: str) -> str:
         return query
+
+
+class FakeRetriever(BaseRetriever):
+    def build_index(self, corpus):
+        return None
+
+    def retrieve(self, query, top_k=None):
+        return []
+
+    def config_dict(self):
+        return {"type": self.__class__.__name__}
 
 
 class TestQueryAugmentation(unittest.TestCase):
@@ -170,6 +183,29 @@ class TestQueryAugmentation(unittest.TestCase):
     def test_openrouter_provider_rejects_placeholder_api_key(self):
         with self.assertRaisesRegex(ValueError, "missing or invalid"):
             OpenRouterProvider(api_key="your_real_openrouter_key", model="model")
+
+    def test_query_transform_spec_serializes_provider_without_api_key(self):
+        provider = OpenRouterProvider(api_key="secret-key", model="openai/gpt-4o-mini")
+        config = HyDE(provider=provider, max_tokens=128).config_dict()
+        rendered = json.dumps(config)
+
+        self.assertIn("OpenRouterProvider", rendered)
+        self.assertIn("openai/gpt-4o-mini", rendered)
+        self.assertNotIn("secret-key", rendered)
+
+    def test_pipeline_config_serializes_hyde_spec_with_openrouter_provider(self):
+        provider = OpenRouterProvider(api_key="secret-key", model="openai/gpt-4o-mini")
+        pipeline = Pipeline(
+            name="dense_hyde",
+            retriever=FakeRetriever(),
+            query_augmentation=[HyDE(provider=provider, max_tokens=128)],
+        )
+        config = pipeline.config_dict()
+        rendered = json.dumps(config)
+
+        self.assertIn("OpenRouterProvider", rendered)
+        self.assertIn("openai/gpt-4o-mini", rendered)
+        self.assertNotIn("secret-key", rendered)
 
     def test_openrouter_provider_preserves_empty_system_prompt(self):
         payload = {

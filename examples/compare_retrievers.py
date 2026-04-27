@@ -3,7 +3,7 @@ from pprint import pprint
 
 from dotenv import load_dotenv
 
-import ragaroo as rr
+import ragaroo as roo
 
 
 DATASET_PATH = os.path.join("data", "nfcorpus")
@@ -13,45 +13,45 @@ EMBEDDER_MODEL = "intfloat/e5-small-v2"
 
 def main() -> None:
     load_dotenv()
-    rr.store_models(MODEL_CACHE)
-    dataset = rr.Dataset.from_folder(DATASET_PATH)
+    roo.store_models(MODEL_CACHE)
+    dataset = roo.Dataset.from_folder(DATASET_PATH)
 
     print("Dataset summary")
     pprint(dataset.summary())
     print()
 
-    embedder = rr.SentenceTransformerEmbedder(EMBEDDER_MODEL)
+    embedder = roo.SentenceTransformerEmbedder(EMBEDDER_MODEL)
     pipelines = [
-        rr.Pipeline(
+        roo.Pipeline(
             name="bm25",
-            retriever=rr.BM25Retriever(top_k=10),
+            retriever=roo.BM25Retriever(top_k=10),
         ),
-        rr.Pipeline(
+        roo.Pipeline(
             name="dense_hnsw",
-            retriever=rr.DenseRetriever(
+            retriever=roo.DenseRetriever(
                 embedder=embedder,
                 top_k=10,
                 index_technique="hnsw",
                 distance_metric="cosine",
             ),
         ),
-        rr.Pipeline(
+        roo.Pipeline(
             name="hybrid_rrf",
-            retriever=rr.HybridRetriever(
-                retriever_1=rr.DenseRetriever(
+            retriever=roo.HybridRetriever(
+                retriever_1=roo.DenseRetriever(
                     embedder=embedder,
                     top_k=10,
                     index_technique="hnsw",
                     distance_metric="cosine",
                 ),
-                retriever_2=rr.BM25Retriever(top_k=10),
+                retriever_2=roo.BM25Retriever(top_k=10),
                 top_k=10,
                 fusion_technique="rrf",
             ),
         ),
     ]
 
-    report = rr.Experiment(
+    report = roo.Experiment(
         dataset=dataset,
         pipelines=pipelines,
         query_limit=25,

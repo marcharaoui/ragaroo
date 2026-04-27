@@ -86,7 +86,7 @@ q2	d2	1
 ```python
 import ragaroo as roo
 
-dataset = roo.Dataset.from_folder("data/nfcorpus")
+dataset = roo.Dataset.from_folder("data/your_custom_dataset")
 embedder = roo.SentenceTransformerEmbedder("intfloat/e5-small-v2")
 
 pipelines = [
@@ -161,14 +161,14 @@ roo.Pipeline(
     name="dense_hyde",
     retriever=roo.DenseRetriever(embedder=embedder, top_k=10),
     query_augmentation=[
-        roo.HyDE(
+        roo.HyDEQueryTransform(
+            provider=provider,
             user_prompt="Write a concise support-style passage for this query.",
             system_prompt="Return only the passage.",
             temperature=0.3,
             max_tokens=220,
         )
     ],
-    llm_provider=provider,
 )
 ```
 
@@ -226,7 +226,7 @@ Included examples:
 - `examples/compare_hyde.py`
 - `examples/compare_multiple_datasets.py`
 
-Most examples default to `data/nfcorpus`. Change the constants at the top of each script to use another dataset, model, cache folder, or query limit.
+Most examples default to `data/your_custom_dataset`. Change the constants at the top of each script to use another dataset, model, cache folder, or query limit.
 
 ## Model Access
 

@@ -3,7 +3,7 @@ from pprint import pprint
 
 from dotenv import load_dotenv
 
-import ragaroo as rr
+import ragaroo as roo
 
 
 DATASET_PATHS = [os.path.join("data", "nfcorpus")]
@@ -12,17 +12,17 @@ EMBEDDER_MODEL = "intfloat/e5-small-v2"
 
 
 def run_dataset(dataset_path: str) -> None:
-    dataset = rr.Dataset.from_folder(dataset_path)
+    dataset = roo.Dataset.from_folder(dataset_path)
     print(f"\nDataset summary: {dataset_path}")
     pprint(dataset.summary())
     print()
 
-    embedder = rr.SentenceTransformerEmbedder(EMBEDDER_MODEL)
+    embedder = roo.SentenceTransformerEmbedder(EMBEDDER_MODEL)
     pipelines = [
-        rr.Pipeline(name="bm25", retriever=rr.BM25Retriever(top_k=10)),
-        rr.Pipeline(
+        roo.Pipeline(name="bm25", retriever=roo.BM25Retriever(top_k=10)),
+        roo.Pipeline(
             name="dense_hnsw",
-            retriever=rr.DenseRetriever(
+            retriever=roo.DenseRetriever(
                 embedder=embedder,
                 top_k=10,
                 index_technique="hnsw",
@@ -32,7 +32,7 @@ def run_dataset(dataset_path: str) -> None:
     ]
 
     output_dir = os.path.join("results", "multi_dataset", os.path.basename(dataset_path))
-    report = rr.Experiment(
+    report = roo.Experiment(
         dataset=dataset,
         pipelines=pipelines,
         query_limit=25,
@@ -44,7 +44,7 @@ def run_dataset(dataset_path: str) -> None:
 
 def main() -> None:
     load_dotenv()
-    rr.store_models(MODEL_CACHE)
+    roo.store_models(MODEL_CACHE)
 
     for dataset_path in DATASET_PATHS:
         run_dataset(dataset_path)

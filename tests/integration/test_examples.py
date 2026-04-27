@@ -109,6 +109,9 @@ class TestExamples(unittest.TestCase):
 
     def _run_example(self, script_path: str, *, include_hyde: bool = False) -> None:
         module = self._load_script(script_path)
+        ragaroo_module = getattr(module, "roo", getattr(module, "rr", None))
+        if ragaroo_module is None:
+            raise AttributeError(f"{script_path} must import ragaroo as roo")
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
             self._write_dataset(root)
@@ -117,11 +120,11 @@ class TestExamples(unittest.TestCase):
                 "OPENROUTER_MODEL": "test-model",
             }
             with patch.dict(os.environ, env, clear=False), patch.object(
-                module.rr, "SentenceTransformerEmbedder", FakeDenseEmbedder
+                ragaroo_module, "SentenceTransformerEmbedder", FakeDenseEmbedder
             ), patch.object(
-                module.rr, "CrossEncoderReranker", FakeCrossEncoderReranker
+                ragaroo_module, "CrossEncoderReranker", FakeCrossEncoderReranker
             ), patch.object(
-                module.rr, "OpenRouterProvider", FakeOpenRouterProvider
+                ragaroo_module, "OpenRouterProvider", FakeOpenRouterProvider
             ):
                 original_cwd = Path.cwd()
                 try:

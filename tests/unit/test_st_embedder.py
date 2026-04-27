@@ -2,11 +2,11 @@ import os
 import unittest
 from pathlib import Path
 
-import ragaroo as rr
+import ragaroo as roo
 from ragaroo.retrieval.dense.st_embedder import SentenceTransformerEmbedder
 
 
-rr.store_models("./models")
+roo.store_models("./models")
 
 
 @unittest.skipUnless(
