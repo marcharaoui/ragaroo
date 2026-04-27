@@ -1,4 +1,4 @@
-# Ragaroo: A Lightweight Retrieval Benchmarking Library for Your Custom Datasets
+# Ragaroo: A Lightweight Retrieval Benchmarking Library for Custom Datasets
 
 
 <p align="center">
