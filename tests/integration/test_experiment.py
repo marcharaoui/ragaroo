@@ -483,7 +483,9 @@ class TestExperiment(unittest.TestCase):
             self.assertTrue((default_output_dir / "report.json").exists())
             manifest = json.loads((default_output_dir / "manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(manifest["experiment"]["experiment_name"], "nfcorpus")
-            self.assertEqual(manifest["experiment"]["settings"]["output_dir"], str(default_output_dir))
+            self.assertTrue(
+                Path(manifest["experiment"]["settings"]["output_dir"]).samefile(default_output_dir)
+            )
 
     def test_reuses_identical_dense_retriever_instances_within_one_experiment(self):
         with tempfile.TemporaryDirectory() as tmpdir:
