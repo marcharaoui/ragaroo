@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=80", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ragaroo"
+version = "0.1.0"
+description = "A lightweight retrieval benchmarking toolkit for experimenting with retrieval pipelines."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [{name = "Marc Haraoui"}]
+keywords = ["retrieval", "benchmarking", "rag", "information-retrieval", "evaluation", "search"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+    "bm25s>=0.3.3",
+    "faiss-cpu>=1.13.2",
+    "matplotlib>=3.10.1",
+    "numpy>=1.26.0",
+    "pandas>=2.2.3",
+    "python-dotenv>=1.1.1",
+    "sentence-transformers>=5.3.0",
+    "tqdm>=4.67.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.5",
+]
+
+[project.urls]
+Homepage = "https://github.com/marcharaoui/ragaroo"
+Repository = "https://github.com/marcharaoui/ragaroo"
+Issues = "https://github.com/marcharaoui/ragaroo/issues"
+
+[tool.setuptools.packages.find]
+include = ["ragaroo*"]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore:builtin type SwigPyPacked has no __module__ attribute:DeprecationWarning",
+    "ignore:builtin type SwigPyObject has no __module__ attribute:DeprecationWarning",
+    "ignore:builtin type swigvarlink has no __module__ attribute:DeprecationWarning",
+]
